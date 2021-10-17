@@ -6,67 +6,123 @@ from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.reply_keyboard import KeyboardButton
 from aiogram.utils import callback_data
 from aiogram.utils.callback_data import CallbackData
+from aiogram.dispatcher.filters import Text
 from config import API_TOKEN
+import markups as nav
 import logging
 # import db
-import markups as nav
-from aiogram.dispatcher.filters import Text
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-db = ('aaa')
+# from languages import setup_middleware
+# i18n = setup_middleware(dp)
+# _ = i18n.gettext
+# LANG_STORAGE = {}
+# LANGS = ["uz", "ru"]
 
 "start"
 @dp.message_handler(commands=['start'])
 async def comand_start(message: types.Message):
-    await bot.send_message(message.from_user.id, "salom {0.first_name} tilni tanlang".format(message.from_user), reply_markup = nav.mainMenu)
+    await bot.send_message(message.from_user.id, "Salom {0.first_name} tilni tanlang\nПривет {0.first_name} выберите язык".format(message.from_user), reply_markup = nav.mainMenu)
 
 "select language"
-@dp.message_handler(Text(equals=["Uz", "Ru"]))
+@dp.message_handler(Text(equals=["🇺🇿Uz", "🇷🇺Ru"]))
 async def bot_message(message: types.Message):
-    if message.text == "Uz":
-        await bot.send_message(message.from_user.id, "Siz o'zbek tilini tanladingiz\nAgar royxatdan otgan bolsangiz 'avtorizatsiya'ni bosing\nagar royxatdan otmagan bolsangiz 'royxatdan otish'ni bosing ", reply_markup=nav.keyboard)
-    elif message.text == "Ru":
-        await bot.send_message(message.from_user.id,"Вы выбрали ru", reply_markup=nav.keyboard)
+    if message.text == "🇺🇿Uz":
+        await bot.send_message(message.from_user.id, "Siz o'zbek tilini tanladingiz\nAgar ro'yxatdan o'tgan bo'lsangiz 'Avtorizatsiya'ni bosing\nAgar ro'yxatdan o'tmagan bo'lsangiz 'Registratsiya'ni bosing", reply_markup=nav.keyboard)
+    if message.text == "🇷🇺Ru":
+        await bot.send_message(message.from_user.id, "Вы выбрали русский язык\nЕсли вы зарегистрированы, нажмите 'Авторизация'\nЕсли вы не зарегистрированы, нажмите 'Регистрация'", reply_markup=nav.keyboardru)
     
-"inlekeyboard avtoregistratsiya"
-@dp.callback_query_handler(text_contains="avt")
-async def callback(call: CallbackQuery):
+"uz inline"
+@dp.callback_query_handler(Text(equals=["Avt"]))
+async def calluz(call: CallbackQuery):
     await call.answer(cache_time=60)
-    callback_data = call.data
-    logging.info(f"call = {callback_data}")
-    await call.message.answer("Siz avtoregni tanladiz\ngmailni yozing")
+    # callback_data = call.data
+    # logging.info(f"call = {callback_data}")
+    await call.message.answer("Siz 'Avtorizatsiya'ni tanladiz\nElektron pochta manzilingizni kiriting")
+
+"ru inline"
+@dp.callback_query_handler(text_contains="Avt ru")
+async def callru(call: CallbackQuery):
+    await call.answer(cache_time=60)
+    # callback_data = call.data
+    # logging.info(f"call = {callback_data}")
+    await call.message.answer("Вы выбрали 'Авторизация'\nВведите свой адрес электронной почты")  
 
 "mail and password"
-@dp.message_handler(text_endswith=['.com', '.ru'])
+@dp.message_handler(text_endswith=['.com', '.ru', '.uz'])
 async def text_endswith_handler(message: types.Message):
-    if message in list:
-        await bot.send_message(message.from_user.id, "Siz email ingiz royxatdan topildi\nparolni yozing")
-    else:
-        await bot.send_message(message.from_user.id, "emilingiz bazada yoq", nav.keyboard)
-
+    # if message in list:
+    await bot.send_message(message.from_user.id, "Siz royxatdan otdingiz", reply_markup=nav.otherMenu)
+    # else:
+    #     await bot.send_message(message.from_user.id, _("emilingiz bazada yoq"), nav.keyboard)
 
 # reply_markup=nav.otherMenu
 
-"service"
+"service UZ"
 @dp.message_handler(Text(equals=["Mening xizmatlarim"]))
-async def service(message: types.Message):
+async def serviceuz(message: types.Message):
     await bot.send_message(message.from_user.id, "Siz xizmatlarni tanladingiz", reply_markup=nav.serviceMenu)
 
-@dp.message_handler(Text(equals=["Mening Xostlarim"]))
-async def host(message: types.Message):
-    await bot.send_message(message.from_user.id, "Siz hostlarni tanladiz")
+@dp.message_handler(Text(equals=["Mening Hostlarim"]))
+async def hostuz(message: types.Message):
+    await bot.send_message(message.from_user.id, "Siz 'host'larni tanladingiz")
 
 @dp.message_handler(Text(equals=["Menig Domenlarim"]))
-async def domen(message: types.Message):
-    await bot.send_message(message.from_user.id, "Siz domen larni tanladingiz")
+async def domenuz(message: types.Message):
+    await bot.send_message(message.from_user.id, "Siz 'domen'larni tanladingiz")
 
 @dp.message_handler(Text(equals=["Mening VDS larim"]))
-async def vds(message: types.Message):
-    await bot.send_message(message.from_user.id, "Siz vds larni tanladingiz")
+async def vdsuz(message: types.Message):
+    await bot.send_message(message.from_user.id, "Siz 'vds'larni tanladingiz")
 
 @dp.message_handler(Text(equals=["Mening serverlarim"]))
-async def server(message: types.Message):
-    await bot.send_message(message.from_user.id, "Siz server larni tanladingiz")
+async def serveruz(message: types.Message):
+    await bot.send_message(message.from_user.id, "Siz 'server'larni tanladingiz")
+
+@dp.message_handler(Text(equals=["Bosh sahifaga qaytish"]))
+async def canceluz(message: types.Message):
+    await bot.send_message(message.from_user.id, "Siz bosh sahiga qaytindingiz", reply_markup=nav.otherMenu)
+
+"service RU"
+@dp.message_handler(Text(equals=["Мои услуги"]))
+async def serviceru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы выбрали услуги", reply_markup=nav.serviceruMenu)
+
+@dp.message_handler(Text(equals=["Мои Хостинги"]))
+async def hostru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы выбрали 'хосты'")
+
+@dp.message_handler(Text(equals=["Мои Домены"]))
+async def domenru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы выбрали 'домены'")
+
+@dp.message_handler(Text(equals=["Мои VDS"]))
+async def vdsru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы выбрали 'vds'")
+
+@dp.message_handler(Text(equals=["Мои Сервера"]))
+async def serverru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы выбрали 'серверы'")
+
+@dp.message_handler(Text(equals=["Bернуться в главное меню"]))
+async def cancelru(message: types.Message):
+    await bot.send_message(message.from_user.id, "Вы вернулись в главное меню", reply_markup=nav.otherMenu)
+
+"Setting change language"
+@dp.message_handler(Text(equals=["Sozlamalar","Настройки"]))
+async def bot_messege(message: types.Message):
+    if message.text == "Sozlamalar":
+        await bot.send_message(message.from_user.id, "Tilni tanlang", reply_markup=nav.setlangMenu)
+    elif message.text == "Настройки":
+        await bot.send_message(message.from_user.id, "Выберите язык", reply_markup=nav.setlangMenu)
+
+@dp.message_handler(Text(equals=["🇺🇿uz", "🇷🇺ru"]))  
+async def bot_message(message: types.Message):
+    if message.text == "🇺🇿uz":
+        await bot.send_message(message.from_user.id, "Siz O'zbek tilini tanladingiz" ,reply_markup=nav.otherMenu)
+    elif message.text == "🇷🇺ru":
+        await bot.send_message(message.from_user.id, "Вы выбрали русский язык" ,reply_markup=nav.otherMenuru)
+
 
 
 

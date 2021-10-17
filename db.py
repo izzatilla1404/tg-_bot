@@ -1,26 +1,40 @@
 import types
+
+import pymysql as pymysql
 from aiogram import bot
 from aiogram.types import message
 from aiohttp.helpers import ProxyInfo
 import mysql.connector
 from mysql.connector import Error
 # import bot
-def create_connection(host_name, user_name, user_password, db_name):
-    connection = None
-    try:
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database=db_name
-        )
-        print("Connection to MySQL DB successful")
-    except Error as e:
-        print(f"The error '{e}' occurred")
+connection = pymysql.connect(host='62.209.143.131',
+                             user='hostmasteruz_pbot',
+                             password='bcaxoZyAXDGc',
+                             database='hostmasteruz_base',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor
+                             )
 
-    return connection
-
-connection = create_connection("localhost", "root", "Qwerty123$", "aaa")
+SQLALCHEMY_ENGINE_OPTIONS = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
+# def create_connection(host_name, user_name, user_password, db_name):
+#     connection = None
+#     try:
+#         connection = mysql.connector.connect(
+#             host=host_name,
+#             user=user_name,
+#             passwd=user_password,
+#             database=db_name
+#         )
+#         print("Connection to MySQL DB successful")
+#     except Error as e:
+#         print(f"The error '{e}' occurred")
+#
+#     return connection
+#
+# connection = create_connection("62.209.143.131", "hostmasteruz_pbot", "bcaxoZyAXDGc", "hostmasteruz_base")
 
 # def create_database(connection, query):
 #     cursor = connection.cursor()
@@ -80,22 +94,14 @@ connection = create_connection("localhost", "root", "Qwerty123$", "aaa")
 #         return result
 #     except Error as e:
 #         print(f"The error '{e}' occurred")
-def execute_read_query(connection, query):
-    cursor = connection.cursor()
-    result = None
-    try:
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return result
-    except Error as e:
-        print(f"The error '{e}' occured")
+# def execute_read_query(connection, query):
 
-select_users = "SELECT * FROM users"
-users = execute_read_query(connection, select_users)
-list = []
-for user in users:
-    list.append(user)
-print(list)
+# select_users = "SELECT * FROM users"
+# users = execute_read_query(connection, select_users)
+# list = []
+# for user in users:
+#     list.append(user)
+# print(list)
 
 # SELECT `vdscontract`.`vdshostname`, `vds_tariffs`.`tariffname` FROM `user`, `vdscontract`, `vds_tariffs` WHERE `user`.`username` = 'marat@hostmaster.uz' AND `user`.`id` = `vdscontract`.`user_id` AND `vdscontract`.`vdsid` = `vds_tariffs`.`idvds` ORDER BY `vdscontract`.`vdshostname`;
 
